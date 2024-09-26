@@ -7,12 +7,25 @@
 	objects = {
 
 /* Begin PBXFileReference section */
-		95D5BB762C9F2A9C008F78CC /* MoneyCheck.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MoneyCheck.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9538BBC92CA53E7F00A24210 /* MoneyCheck.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MoneyCheck.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		95D5BBA22C9F565E008F78CC /* Exceptions for "MoneyCheck" folder in "MoneyCheck" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Configuration/Info.plist,
+			);
+			target = 95D5BB752C9F2A9C008F78CC /* MoneyCheck */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		95D5BB782C9F2A9C008F78CC /* MoneyCheck */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				95D5BBA22C9F565E008F78CC /* Exceptions for "MoneyCheck" folder in "MoneyCheck" target */,
+			);
 			path = MoneyCheck;
 			sourceTree = "<group>";
 		};
@@ -33,16 +46,8 @@
 			isa = PBXGroup;
 			children = (
 				95D5BB782C9F2A9C008F78CC /* MoneyCheck */,
-				95D5BB772C9F2A9C008F78CC /* Products */,
+				9538BBC92CA53E7F00A24210 /* MoneyCheck.app */,
 			);
-			sourceTree = "<group>";
-		};
-		95D5BB772C9F2A9C008F78CC /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				95D5BB762C9F2A9C008F78CC /* MoneyCheck.app */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -67,7 +72,7 @@
 			packageProductDependencies = (
 			);
 			productName = MoneyCheck;
-			productReference = 95D5BB762C9F2A9C008F78CC /* MoneyCheck.app */;
+			productReference = 9538BBC92CA53E7F00A24210 /* MoneyCheck.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -91,11 +96,12 @@
 			knownRegions = (
 				en,
 				Base,
+				uk,
 			);
 			mainGroup = 95D5BB6D2C9F2A9B008F78CC;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 95D5BB772C9F2A9C008F78CC /* Products */;
+			productRefGroup = 95D5BB6D2C9F2A9B008F78CC;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -251,14 +257,16 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"MoneyCheck/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"MoneyCheck/Resources/PreviewContent\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MoneyCheck/Configuration/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -279,14 +287,16 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"MoneyCheck/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"MoneyCheck/Resources/PreviewContent\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MoneyCheck/Configuration/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
