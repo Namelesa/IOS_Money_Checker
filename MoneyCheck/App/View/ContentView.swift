@@ -17,9 +17,8 @@ struct ContentView: View {
     }
     
     var body: some View {
-        
-        ZStack(alignment: .bottom){
-            TabView(selection: $selectedTab){
+        VStack {
+            TabView(selection: $selectedTab) {
                 MainView()
                     .tag("Home")
                 ReportView()
@@ -29,42 +28,59 @@ struct ContentView: View {
                 Text("Profile")
                     .tag("Profile")
             }
-            HStack{
-                ForEach(tabs, id: \.self){ tab in
+            .edgesIgnoringSafeArea(.all)
+            
+            Spacer()
+            
+            HStack(spacing: 0) {
+                ForEach(tabs, id: \.self) { tab in
                     TabBarItem(tab: tab, selected: $selectedTab)
                 }
             }
-            .padding(.bottom, 5)
-            .padding(.top, 20)
-            .frame(maxWidth: .infinity)
-            .background(Color("MainBg"))
+            .padding(.bottom, 10)
+            .frame(maxWidth: .infinity, minHeight: 60)
+            .background(
+                Color(UIColor.systemBackground) // Динамический цвет для фона
+                    .shadow(color: Color.black.opacity(0.2), radius: 10)
+            )
         }
+        .edgesIgnoringSafeArea(.bottom)
     }
 }
 
-struct TabBarItem: View{
-    @State var tab : String
+struct TabBarItem: View {
+    let tab: String
     @Binding var selected: String
+    
     var body: some View {
-        ZStack{
-            Button{
-                withAnimation(.spring()){
+        ZStack {
+            Button(action: {
+                withAnimation(.easeInOut) {
                     selected = tab
                 }
-                
-            } label: {
-                HStack{
+            }) {
+                VStack {
                     Image(tab)
                         .resizable()
-                        .frame(width: 20, height: 20)
+                        .renderingMode(.template)
+                        .frame(width: 25, height: 25)
+                        .foregroundColor(selected == tab ? Color.blue : Color.gray.opacity(0.7))
+                    
+                    Text(tab)
+                        .font(.caption)
+                        .foregroundColor(selected == tab ? Color.blue : Color.gray.opacity(0.7))
                 }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(selected == tab ? Color(UIColor.systemBackground) : Color.clear) // Динамическое изменение фона
+                        .shadow(color: selected == tab ? Color.primary.opacity(0.1) : Color.clear, radius: 8, x: 0, y: 4)
+                )
             }
         }
-        .opacity(selected == tab ? 1 : 0.7)
-        .padding(.vertical, 10)
-        .padding(.horizontal, 27)
-        .background(selected == tab ? .white : Color("MainBg"))
-        .clipShape(Capsule())
+        .padding(.horizontal, 5)
+        .frame(maxWidth: .infinity)
     }
 }
 

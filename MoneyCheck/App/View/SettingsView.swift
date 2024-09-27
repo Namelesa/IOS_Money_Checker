@@ -11,7 +11,7 @@ struct SettingsView: View {
     @AppStorage("salary") private var salary: Double = 0
 
     var body: some View {
-        ScrollView{
+        ScrollView(.vertical, showsIndicators: false){
             VStack {
                 Text("Настройки")
                     .font(.largeTitle)

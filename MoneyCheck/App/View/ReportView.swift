@@ -10,9 +10,9 @@ import SwiftUI
 struct ReportView: View {
     @AppStorage("salary") private var salary: Double = 0
     @State private var expenses: [Expense] = [
-        Expense(category: "Еда", amount: 150.0),
-        Expense(category: "Транспорт", amount: 50.0),
-        Expense(category: "Развлечения", amount: 75.0)
+        Expense(category: "Еда", amount: 150.0, isIncome: false),
+        Expense(category: "Транспорт", amount: 50.0, isIncome: false),
+        Expense(category: "Развлечения", amount: 75.0, isIncome: false)
     ]
     
     var totalExpenses: Double {
@@ -24,7 +24,7 @@ struct ReportView: View {
     }
 
     var body: some View {
-        ScrollView{
+        ScrollView(.vertical, showsIndicators: false){
             VStack(spacing: 20) {
                 Text("Ваши расходы")
                     .font(.largeTitle)
