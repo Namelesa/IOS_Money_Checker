@@ -13,4 +13,5 @@ struct Expense: Identifiable {
     let category: String
     let amount: Double
     let isIncome: Bool
+    let date: Date
 }

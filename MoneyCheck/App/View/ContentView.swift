@@ -40,7 +40,7 @@ struct ContentView: View {
             .padding(.bottom, 10)
             .frame(maxWidth: .infinity, minHeight: 60)
             .background(
-                Color(UIColor.systemBackground) // Динамический цвет для фона
+                Color(UIColor.systemBackground) 
                     .shadow(color: Color.black.opacity(0.2), radius: 10)
             )
         }
@@ -74,7 +74,7 @@ struct TabBarItem: View {
                 .padding(.vertical, 10)
                 .background(
                     RoundedRectangle(cornerRadius: 20)
-                        .fill(selected == tab ? Color(UIColor.systemBackground) : Color.clear) // Динамическое изменение фона
+                        .fill(selected == tab ? Color(UIColor.systemBackground) : Color.clear)
                         .shadow(color: selected == tab ? Color.primary.opacity(0.1) : Color.clear, radius: 8, x: 0, y: 4)
                 )
             }

@@ -67,7 +67,7 @@ struct MainView: View {
                     HStack(spacing: 20) {
                         Button(action: {
                             if let amountValue = Double(amount), !category.isEmpty {
-                                let newTransaction = Expense(category: category, amount: amountValue, isIncome: true)
+                                let newTransaction = Expense(category: category, amount: amountValue, isIncome: true, date: Date())
                                 transactions.append(newTransaction)
                                 category = ""
                                 amount = ""
@@ -85,7 +85,7 @@ struct MainView: View {
 
                         Button(action: {
                             if let amountValue = Double(amount), !category.isEmpty {
-                                let newTransaction = Expense(category: category, amount: amountValue, isIncome: false)
+                                let newTransaction = Expense(category: category, amount: amountValue, isIncome: false, date: Date())
                                 transactions.append(newTransaction)
                                 category = ""
                                 amount = ""
