@@ -1,10 +1,5 @@
-//
-//  ReportView.swift
-//  MoneyCheck
-//
-//  Created by Максим Билык on 26.09.2024.
-//
 import SwiftUI
+
 struct ReportView: View {
     @AppStorage("salary") private var salary: Double = 500.0
     @State private var expenses: [Expense] = [
@@ -16,16 +11,18 @@ struct ReportView: View {
 
     @State private var selectedCategory: String? = nil
     @State private var showDetails = false
-
-    @State private var selectedMonth = Calendar.current.component(.month, from: Date())
-    @State private var selectedYear = Calendar.current.component(.year, from: Date())
+    @State private var selectedDate = Date() // Текущая дата
 
     var totalExpenses: Double {
-        expenses.filter { !$0.isIncome && Calendar.current.component(.month, from: $0.date) == selectedMonth && Calendar.current.component(.year, from: $0.date) == selectedYear }.reduce(0) { $0 + $1.amount }
+        expenses.filter {
+            !$0.isIncome && Calendar.current.isDate($0.date, equalTo: selectedDate, toGranularity: .month)
+        }.reduce(0) { $0 + $1.amount }
     }
 
     var totalIncome: Double {
-        expenses.filter { $0.isIncome && Calendar.current.component(.month, from: $0.date) == selectedMonth && Calendar.current.component(.year, from: $0.date) == selectedYear }.reduce(0) { $0 + $1.amount }
+        expenses.filter {
+            $0.isIncome && Calendar.current.isDate($0.date, equalTo: selectedDate, toGranularity: .month)
+        }.reduce(0) { $0 + $1.amount }
     }
 
     var remainingMoney: Double {
@@ -34,7 +31,8 @@ struct ReportView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 20) { // Добавляем отступы между элементами
+                // Блок с доходами и расходами
                 HStack {
                     VStack(alignment: .leading) {
                         Text("Spent")
@@ -54,18 +52,18 @@ struct ReportView: View {
                 }
                 .padding(.horizontal)
 
-                Picker("Month", selection: $selectedMonth) {
-                    ForEach(1...12, id: \.self) { month in
-                        Text("\(month)").tag(month)
-                    }
-                }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding(.horizontal)
+                // Уменьшенный календарь
+                DatePicker("Select Month", selection: $selectedDate, displayedComponents: [.date])
+                    .datePickerStyle(GraphicalDatePickerStyle())
+                    .frame(maxHeight: 200) // Уменьшенная высота календаря
+                    .padding()
 
-                SmoothLineGraph(expenses: expenses, selectedMonth: $selectedMonth, selectedYear: $selectedYear)
-                    .frame(height: 200)
+                // График с увеличенной высотой
+                SmoothLineGraph(expenses: expenses, selectedDate: $selectedDate)
+                    .frame(height: 300) // Увеличиваем размер графика
                     .padding(.horizontal)
 
+                // Разделение по категориям
                 SpendingBreakdown(expenses: expenses, selectedCategory: $selectedCategory, showDetails: $showDetails)
 
                 Spacer()
@@ -82,25 +80,46 @@ struct ReportView: View {
 
 struct SmoothLineGraph: View {
     var expenses: [Expense]
-    @Binding var selectedMonth: Int
-    @Binding var selectedYear: Int
+    @Binding var selectedDate: Date
 
     var filteredExpenses: [Expense] {
         expenses.filter {
-            Calendar.current.component(.month, from: $0.date) == selectedMonth &&
-            Calendar.current.component(.year, from: $0.date) == selectedYear
+            Calendar.current.isDate($0.date, equalTo: selectedDate, toGranularity: .month)
         }
     }
-    
+
     var body: some View {
-        VStack {
-            
-            Rectangle()
-                .fill(Color.blue.opacity(0.3))
-                .frame(height: 200)
+        GeometryReader { geometry in
+            let width = geometry.size.width
+            let height = geometry.size.height
+
+            // Количество дней в месяце
+            let daysInMonth = Calendar.current.range(of: .day, in: .month, for: selectedDate)?.count ?? 30
+
+            // Подготовка данных для отрисовки точек
+            let points = filteredExpenses.map { expense -> CGPoint in
+                let day = Calendar.current.component(.day, from: expense.date)
+                let x = width * CGFloat(day) / CGFloat(daysInMonth)
+                let y = height * (1 - CGFloat(expense.amount) / 1000) // Нормализуем сумму
+                return CGPoint(x: x, y: y)
+            }
+
+            // Отрисовка линий
+            Path { path in
+                if let firstPoint = points.first {
+                    path.move(to: firstPoint)
+
+                    for point in points.dropFirst() {
+                        path.addLine(to: point)
+                    }
+                }
+            }
+            .stroke(Color.blue, lineWidth: 2)
         }
+        .frame(height: 300) // Высота графика
     }
 }
+
 
 #Preview {
     ReportView()
