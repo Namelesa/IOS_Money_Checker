@@ -13,14 +13,14 @@ struct SettingsView: View {
     var body: some View {
         ScrollView(.vertical, showsIndicators: false){
             VStack {
-                Text("Настройки")
+                Text("Settings")
                     .font(.largeTitle)
                     .padding()
 
                 Button(action: {
                     salary = 0
                 }) {
-                    Text("Сбросить зарплату")
+                    Text("Reset salary")
                         .font(.title2)
                         .padding()
                         .background(Color.red)

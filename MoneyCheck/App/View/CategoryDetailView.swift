@@ -6,36 +6,63 @@
 //
 
 import SwiftUI
+import Charts
 
 struct CategoryDetailView: View {
     let category: String
     let expenses: [Expense]
     
-    var dailyExpenses: [Expense] {
-        expenses.filter { $0.category == category && !$0.isIncome }
+    var filteredExpenses: [Expense] {
+        expenses.filter { $0.category == category }
     }
     
-    var weeklyExpenses: Double {
+    var dailyTotal: Double {
+        filterExpenses(for: .day)
+    }
+    
+    var weeklyTotal: Double {
         filterExpenses(for: .weekOfYear)
     }
     
-    var monthlyExpenses: Double {
+    var monthlyTotal: Double {
         filterExpenses(for: .month)
     }
     
-    var yearlyExpenses: Double {
+    var yearlyTotal: Double {
         filterExpenses(for: .year)
     }
     
     var body: some View {
-        VStack(alignment: .leading) {
-            Text("Details for \(category)")
-                .font(.title)
-                .padding()
+        VStack(alignment: .leading, spacing: 20) {
+            Text("Category Details: \(category)")
+                .font(.title2)
+                .bold()
+                .padding(.horizontal)
             
+            // График
+            Chart {
+                ForEach(filteredExpenses) { expense in
+                    BarMark(
+                        x: .value("Date", expense.date, unit: .day),
+                        y: .value("Amount", expense.amount)
+                    )
+                    .foregroundStyle(.red)
+                }
+            }
+            .frame(height: 200)
+            .padding(.horizontal)
+            
+            // Сводка
             List {
-                Section(header: Text("Expenses by Day")) {
-                    ForEach(dailyExpenses, id: \.id) { expense in
+                Section(header: Text("Summary")) {
+                    summaryRow(title: "Daily Total", amount: dailyTotal)
+                    summaryRow(title: "Weekly Total", amount: weeklyTotal)
+                    summaryRow(title: "Monthly Total", amount: monthlyTotal)
+                    summaryRow(title: "Yearly Total", amount: yearlyTotal)
+                }
+                
+                Section(header: Text("Expenses")) {
+                    ForEach(filteredExpenses) { expense in
                         HStack {
                             Text(expense.date, style: .date)
                             Spacer()
@@ -43,43 +70,38 @@ struct CategoryDetailView: View {
                         }
                     }
                 }
-                
-                Section(header: Text("Summary")) {
-                    HStack {
-                        Text("Weekly Total:")
-                        Spacer()
-                        Text("$\(String(format: "%.2f", weeklyExpenses))")
-                    }
-                    HStack {
-                        Text("Monthly Total:")
-                        Spacer()
-                        Text("$\(String(format: "%.2f", monthlyExpenses))")
-                    }
-                    HStack {
-                        Text("Yearly Total:")
-                        Spacer()
-                        Text("$\(String(format: "%.2f", yearlyExpenses))")
-                    }
-                }
             }
             .listStyle(GroupedListStyle())
         }
+        .navigationTitle("\(category) Details")
         .padding()
     }
     
     func filterExpenses(for component: Calendar.Component) -> Double {
         let calendar = Calendar.current
         let today = Date()
-        return dailyExpenses
-            .filter { calendar.component(component, from: $0.date) == calendar.component(component, from: today) }
+        return filteredExpenses
+            .filter {
+                calendar.isDate($0.date, equalTo: today, toGranularity: component)
+            }
             .reduce(0) { $0 + $1.amount }
+    }
+    
+    private func summaryRow(title: String, amount: Double) -> some View {
+        HStack {
+            Text(title)
+            Spacer()
+            Text("$\(String(format: "%.2f", amount))")
+                .bold()
+        }
+        .padding(.vertical, 5)
     }
 }
 
 #Preview {
     CategoryDetailView(category: "Dining", expenses: [
-        Expense(category: "Dining", amount: 20.0, isIncome: false, date: Date().addingTimeInterval(-86400 * 1)),
-        Expense(category: "Dining", amount: 50.0, isIncome: false, date: Date().addingTimeInterval(-86400 * 10)),
-        Expense(category: "Dining", amount: 100.0, isIncome: false, date: Date().addingTimeInterval(-86400 * 30))
+        Expense(date: Date().addingTimeInterval(-86400), category: "Dining", amount: 20),
+        Expense(date: Date().addingTimeInterval(-86400 * 7), category: "Dining", amount: 50),
+        Expense(date: Date().addingTimeInterval(-86400 * 30), category: "Dining", amount: 100)
     ])
 }

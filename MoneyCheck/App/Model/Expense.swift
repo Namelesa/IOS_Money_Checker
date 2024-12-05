@@ -10,8 +10,9 @@ import Charts
 
 struct Expense: Identifiable {
     let id = UUID()
+    let date: Date
     let category: String
     let amount: Double
-    let isIncome: Bool
-    let date: Date
 }
+
+

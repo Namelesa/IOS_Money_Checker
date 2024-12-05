@@ -1,126 +1,120 @@
 import SwiftUI
+import Charts
 
 struct ReportView: View {
-    @AppStorage("salary") private var salary: Double = 500.0
-    @State private var expenses: [Expense] = [
-        Expense(category: "Salary", amount: 500.0, isIncome: true, date: Date()),
-        Expense(category: "Transport", amount: 100.0, isIncome: false, date: Date().addingTimeInterval(-86400 * 2)),
-        Expense(category: "Dining", amount: 120.0, isIncome: false, date: Date().addingTimeInterval(-86400 * 3)),
-        Expense(category: "Shopping", amount: 80.0, isIncome: false, date: Date().addingTimeInterval(-86400 * 10)),
-    ]
-
+    @State private var selectedDate = Date()
     @State private var selectedCategory: String? = nil
-    @State private var showDetails = false
-    @State private var selectedDate = Date() // Текущая дата
-
-    var totalExpenses: Double {
-        expenses.filter {
-            !$0.isIncome && Calendar.current.isDate($0.date, equalTo: selectedDate, toGranularity: .month)
-        }.reduce(0) { $0 + $1.amount }
-    }
-
-    var totalIncome: Double {
-        expenses.filter {
-            $0.isIncome && Calendar.current.isDate($0.date, equalTo: selectedDate, toGranularity: .month)
-        }.reduce(0) { $0 + $1.amount }
-    }
-
-    var remainingMoney: Double {
-        salary - totalExpenses
-    }
-
-    var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) { // Добавляем отступы между элементами
-                // Блок с доходами и расходами
-                HStack {
-                    VStack(alignment: .leading) {
-                        Text("Spent")
-                            .font(.system(size: 18, weight: .semibold))
-                        Text("$\(String(format: "%.0f", totalExpenses))")
-                            .font(.system(size: 36, weight: .bold))
-                            .foregroundColor(.red)
-                    }
-                    Spacer()
-                    VStack(alignment: .trailing) {
-                        Text("Income")
-                            .font(.system(size: 18, weight: .semibold))
-                        Text("$\(String(format: "%.0f", totalIncome))")
-                            .font(.system(size: 36, weight: .bold))
-                            .foregroundColor(.green)
-                    }
-                }
-                .padding(.horizontal)
-
-                // Уменьшенный календарь
-                DatePicker("Select Month", selection: $selectedDate, displayedComponents: [.date])
-                    .datePickerStyle(GraphicalDatePickerStyle())
-                    .frame(maxHeight: 200) // Уменьшенная высота календаря
-                    .padding()
-
-                // График с увеличенной высотой
-                SmoothLineGraph(expenses: expenses, selectedDate: $selectedDate)
-                    .frame(height: 300) // Увеличиваем размер графика
-                    .padding(.horizontal)
-
-                // Разделение по категориям
-                SpendingBreakdown(expenses: expenses, selectedCategory: $selectedCategory, showDetails: $showDetails)
-
-                Spacer()
-            }
-            .padding()
-        }
-        .sheet(isPresented: $showDetails) {
-            if let selectedCategory = selectedCategory {
-                CategoryDetailView(category: selectedCategory, expenses: expenses)
-            }
-        }
-    }
-}
-
-struct SmoothLineGraph: View {
-    var expenses: [Expense]
-    @Binding var selectedDate: Date
-
+    @State private var showCategoryDetails = false
+    
+    @State private var expenses = [
+        Expense(date: Calendar.current.date(byAdding: .day, value: -1, to: Date())!, category: "Test1", amount: 450),
+        Expense(date: Date(), category: "Test2", amount: 300),
+        Expense(date: Date(), category: "Test3", amount: 150),
+        Expense(date: Date(), category: "Test4", amount: 200)
+    ]
+    
+    @State private var incomes = [
+        Income(date: Calendar.current.date(byAdding: .day, value: -2, to: Date())!, source: "Salary", amount: 5000),
+        Income(date: Date(), source: "Test5", amount: 2000)
+    ]
+    
     var filteredExpenses: [Expense] {
-        expenses.filter {
-            Calendar.current.isDate($0.date, equalTo: selectedDate, toGranularity: .month)
-        }
+        expenses.filter { Calendar.current.isDate($0.date, inSameDayAs: selectedDate) }
     }
-
+    
+    var filteredIncomes: [Income] {
+        incomes.filter { Calendar.current.isDate($0.date, inSameDayAs: selectedDate) }
+    }
+    
     var body: some View {
-        GeometryReader { geometry in
-            let width = geometry.size.width
-            let height = geometry.size.height
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 20) {
+                    DatePicker("Choose the date", selection: $selectedDate, displayedComponents: [.date])
+                        .datePickerStyle(GraphicalDatePickerStyle())
+                        .padding()
+                        .background(Color(UIColor.secondarySystemBackground))
+                        .cornerRadius(10)
+                        .padding(.horizontal)
+                    
+                    VStack(alignment: .leading) {
+                        Text("Schedule of income and expenses")
+                            .font(.headline)
+                            .padding(.horizontal)
+                        
+                        Chart {
+                            ForEach(filteredIncomes) { income in
+                                BarMark(
+                                    x: .value("Source", income.source),
+                                    y: .value("Price", income.amount)
+                                )
+                                .foregroundStyle(.green)
+                            }
+                            
+                            ForEach(filteredExpenses) { expense in
+                                BarMark(
+                                    x: .value("Category", expense.category),
+                                    y: .value("Price", expense.amount)
+                                )
+                                .foregroundStyle(.red)
+                            }
+                        }
+                        .frame(height: 200)
+                        .padding(.horizontal)
+                    }
+                    
+                    VStack(alignment: .leading) {
+                        Text("Expenses")
+                            .font(.headline)
+                            .padding(.horizontal)
+                        
+                        ForEach(filteredExpenses) { expense in
+                            HStack {
+                                Text(expense.category)
+                                Spacer()
+                                Text("\(expense.amount, specifier: "%.2f") $")
+                            }
+                            .padding(.horizontal)
+                            .padding(.vertical, 5)
+                            .onTapGesture {
+                                selectedCategory = expense.category
+                                showCategoryDetails.toggle()
+                            }
+                        }
+                    }
+                    .padding(.top)
 
-            // Количество дней в месяце
-            let daysInMonth = Calendar.current.range(of: .day, in: .month, for: selectedDate)?.count ?? 30
-
-            // Подготовка данных для отрисовки точек
-            let points = filteredExpenses.map { expense -> CGPoint in
-                let day = Calendar.current.component(.day, from: expense.date)
-                let x = width * CGFloat(day) / CGFloat(daysInMonth)
-                let y = height * (1 - CGFloat(expense.amount) / 1000) // Нормализуем сумму
-                return CGPoint(x: x, y: y)
-            }
-
-            // Отрисовка линий
-            Path { path in
-                if let firstPoint = points.first {
-                    path.move(to: firstPoint)
-
-                    for point in points.dropFirst() {
-                        path.addLine(to: point)
+                    VStack(alignment: .leading) {
+                        Text("Incomes")
+                            .font(.headline)
+                            .padding(.horizontal)
+                        
+                        ForEach(filteredIncomes) { income in
+                            HStack {
+                                Text(income.source)
+                                Spacer()
+                                Text("\(income.amount, specifier: "%.2f") $")
+                            }
+                            .padding(.horizontal)
+                            .padding(.vertical, 5)
+                        }
                     }
                 }
+                .padding(.vertical)
             }
-            .stroke(Color.blue, lineWidth: 2)
+            .background(Color(UIColor.systemBackground))
+            .navigationTitle("Financial Review")
+            .navigationDestination(isPresented: $showCategoryDetails) {
+                if let selectedCategory {
+                    CategoryDetailView(category: selectedCategory, expenses: expenses)
+                }
+            }
         }
-        .frame(height: 300) // Высота графика
     }
 }
 
-
-#Preview {
-    ReportView()
+struct ReportView_Previews: PreviewProvider {
+    static var previews: some View {
+        ReportView()
+    }
 }
