@@ -9,12 +9,13 @@ import SwiftUI
 
 struct MainView: View {
     @AppStorage("salary") private var salary: Double = 0
-    @State private var transactions: [Expense] = []
+    @State private var transactions: [TransactionModel] = []
     @State private var selectedCategory: String? = nil
     @State private var showDetails = false
     @State private var category: String = ""
     @State private var amount: String = ""
-    
+    @State private var categoryId: Int = 0
+
     var body: some View {
         NavigationView {
             ScrollView {
@@ -56,9 +57,10 @@ struct MainView: View {
                     }
                     .padding()
                     
-                    SpendingBreakdown(expenses: transactions, selectedCategory: $selectedCategory, showDetails: $showDetails)
+                    // Updated 'transactions' here
+                    SpendingBreakdown(transactions: transactions, selectedCategory: $selectedCategory, showDetails: $showDetails)
                         .background(
-                            NavigationLink("", destination: CategoryDetailView(category: selectedCategory ?? "", expenses: transactions), isActive: $showDetails)
+                            NavigationLink("", destination: CategoryDetailView(category: selectedCategory ?? "", transactions: transactions), isActive: $showDetails)
                                 .hidden()
                         )
                 }
@@ -70,10 +72,11 @@ struct MainView: View {
     
     private func addTransaction(isIncome: Bool) {
         guard let amountValue = Double(amount), !category.isEmpty else { return }
-        let transaction = Expense(date: Date(), category: category, amount: isIncome ? amountValue : -amountValue)
+        let transaction = TransactionModel(date: Date(), categoryId: categoryId, category: category, amount: isIncome ? amountValue : -amountValue, isIncome: isIncome)
         transactions.append(transaction)
         category = ""
         amount = ""
+        categoryId += 1 // Increment the category ID for next transaction
     }
 }
 

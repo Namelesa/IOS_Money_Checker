@@ -6,24 +6,25 @@ struct ReportView: View {
     @State private var selectedCategory: String? = nil
     @State private var showCategoryDetails = false
     
-    @State private var expenses = [
-        Expense(date: Calendar.current.date(byAdding: .day, value: -1, to: Date())!, category: "Test1", amount: 450),
-        Expense(date: Date(), category: "Test2", amount: 300),
-        Expense(date: Date(), category: "Test3", amount: 150),
-        Expense(date: Date(), category: "Test4", amount: 200)
+    @State private var transactions = [
+        TransactionModel(date: Calendar.current.date(byAdding: .day, value: -1, to: Date())!, categoryId: 1, category: "Test1", amount: 450, isIncome: false),
+        TransactionModel(date: Date(), categoryId: 2, category: "Test2", amount: 300, isIncome: false),
+        TransactionModel(date: Date(), categoryId: 3, category: "Test3", amount: 150, isIncome: false),
+        TransactionModel(date: Date(), categoryId: 4, category: "Test4", amount: 200, isIncome: false),
+        TransactionModel(date: Calendar.current.date(byAdding: .day, value: -2, to: Date())!, categoryId: 5, category: "Salary", amount: 5000, isIncome: true),
+        TransactionModel(date: Date(), categoryId: 6, category: "Bonus", amount: 2000, isIncome: true)
     ]
     
-    @State private var incomes = [
-        Income(date: Calendar.current.date(byAdding: .day, value: -2, to: Date())!, source: "Salary", amount: 5000),
-        Income(date: Date(), source: "Test5", amount: 2000)
-    ]
-    
-    var filteredExpenses: [Expense] {
-        expenses.filter { Calendar.current.isDate($0.date, inSameDayAs: selectedDate) }
+    var filteredTransactions: [TransactionModel] {
+        transactions.filter { Calendar.current.isDate($0.date, inSameDayAs: selectedDate) }
     }
     
-    var filteredIncomes: [Income] {
-        incomes.filter { Calendar.current.isDate($0.date, inSameDayAs: selectedDate) }
+    var expenses: [TransactionModel] {
+        filteredTransactions.filter { !$0.isIncome }
+    }
+    
+    var incomes: [TransactionModel] {
+        filteredTransactions.filter { $0.isIncome }
     }
     
     var body: some View {
@@ -43,18 +44,18 @@ struct ReportView: View {
                             .padding(.horizontal)
                         
                         Chart {
-                            ForEach(filteredIncomes) { income in
+                            ForEach(incomes) { income in
                                 BarMark(
-                                    x: .value("Source", income.source),
-                                    y: .value("Price", income.amount)
+                                    x: .value("Source", income.category),
+                                    y: .value("Amount", income.amount)
                                 )
                                 .foregroundStyle(.green)
                             }
                             
-                            ForEach(filteredExpenses) { expense in
+                            ForEach(expenses) { expense in
                                 BarMark(
                                     x: .value("Category", expense.category),
-                                    y: .value("Price", expense.amount)
+                                    y: .value("Amount", expense.amount)
                                 )
                                 .foregroundStyle(.red)
                             }
@@ -68,7 +69,7 @@ struct ReportView: View {
                             .font(.headline)
                             .padding(.horizontal)
                         
-                        ForEach(filteredExpenses) { expense in
+                        ForEach(expenses) { expense in
                             HStack {
                                 Text(expense.category)
                                 Spacer()
@@ -89,9 +90,9 @@ struct ReportView: View {
                             .font(.headline)
                             .padding(.horizontal)
                         
-                        ForEach(filteredIncomes) { income in
+                        ForEach(incomes) { income in
                             HStack {
-                                Text(income.source)
+                                Text(income.category)
                                 Spacer()
                                 Text("\(income.amount, specifier: "%.2f") $")
                             }
@@ -106,7 +107,7 @@ struct ReportView: View {
             .navigationTitle("Financial Review")
             .navigationDestination(isPresented: $showCategoryDetails) {
                 if let selectedCategory {
-                    CategoryDetailView(category: selectedCategory, expenses: expenses)
+                    CategoryDetailView(category: selectedCategory, transactions: transactions)
                 }
             }
         }

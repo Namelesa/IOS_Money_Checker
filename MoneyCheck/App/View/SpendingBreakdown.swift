@@ -7,12 +7,12 @@
 import SwiftUI
 
 struct SpendingBreakdown: View {
-    var expenses: [Expense]
+    var transactions: [TransactionModel]
     @Binding var selectedCategory: String?
     @Binding var showDetails: Bool
     
-    var groupedExpenses: [String: Double] {
-        Dictionary(grouping: expenses, by: { $0.category })
+    var groupedTransactions: [String: Double] {
+        Dictionary(grouping: transactions, by: { $0.category })
             .mapValues { $0.reduce(0) { $0 + $1.amount } }
     }
     
@@ -22,13 +22,13 @@ struct SpendingBreakdown: View {
                 .font(.headline)
                 .padding(.bottom, 10)
             
-            ForEach(groupedExpenses.keys.sorted(), id: \.self) { category in
+            ForEach(groupedTransactions.keys.sorted(), id: \.self) { category in
                 HStack {
                     Text(category)
                         .font(.subheadline)
                     Spacer()
-                    Text("$\(String(format: "%.2f", groupedExpenses[category]!))")
-                        .foregroundColor(.red)
+                    Text("$\(String(format: "%.2f", groupedTransactions[category]!))")
+                        .foregroundColor(groupedTransactions[category]! < 0 ? .red : .green)
                 }
                 .padding(.vertical, 5)
                 .onTapGesture {
@@ -39,4 +39,17 @@ struct SpendingBreakdown: View {
         }
         .padding()
     }
+}
+
+#Preview {
+    SpendingBreakdown(
+        transactions: [
+            TransactionModel(date: Date(), categoryId: 1, category: "Food", amount: -50, isIncome: false),
+            TransactionModel(date: Date(), categoryId: 2, category: "Transport", amount: -20, isIncome: false),
+            TransactionModel(date: Date(), categoryId: 1, category: "Food", amount: -30, isIncome: false),
+            TransactionModel(date: Date(), categoryId: 3, category: "Salary", amount: 1500, isIncome: true)
+        ],
+        selectedCategory: .constant(nil),
+        showDetails: .constant(false)
+    )
 }

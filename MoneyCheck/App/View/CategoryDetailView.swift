@@ -10,26 +10,26 @@ import Charts
 
 struct CategoryDetailView: View {
     let category: String
-    let expenses: [Expense]
+    let transactions: [TransactionModel]
     
-    var filteredExpenses: [Expense] {
-        expenses.filter { $0.category == category }
+    var filteredTransactions: [TransactionModel] {
+        transactions.filter { $0.category == category }
     }
     
     var dailyTotal: Double {
-        filterExpenses(for: .day)
+        filterTransactions(for: .day)
     }
     
     var weeklyTotal: Double {
-        filterExpenses(for: .weekOfYear)
+        filterTransactions(for: .weekOfYear)
     }
     
     var monthlyTotal: Double {
-        filterExpenses(for: .month)
+        filterTransactions(for: .month)
     }
     
     var yearlyTotal: Double {
-        filterExpenses(for: .year)
+        filterTransactions(for: .year)
     }
     
     var body: some View {
@@ -39,20 +39,20 @@ struct CategoryDetailView: View {
                 .bold()
                 .padding(.horizontal)
             
-            // График
+            // Chart for showing the transactions for the category
             Chart {
-                ForEach(filteredExpenses) { expense in
+                ForEach(filteredTransactions) { transaction in
                     BarMark(
-                        x: .value("Date", expense.date, unit: .day),
-                        y: .value("Amount", expense.amount)
+                        x: .value("Date", transaction.date, unit: .day),
+                        y: .value("Amount", transaction.amount)
                     )
-                    .foregroundStyle(.red)
+                    .foregroundStyle(transaction.isIncome ? .green : .red)
                 }
             }
             .frame(height: 200)
             .padding(.horizontal)
             
-            // Сводка
+            // Summary of total amounts
             List {
                 Section(header: Text("Summary")) {
                     summaryRow(title: "Daily Total", amount: dailyTotal)
@@ -61,12 +61,12 @@ struct CategoryDetailView: View {
                     summaryRow(title: "Yearly Total", amount: yearlyTotal)
                 }
                 
-                Section(header: Text("Expenses")) {
-                    ForEach(filteredExpenses) { expense in
+                Section(header: Text("Transactions")) {
+                    ForEach(filteredTransactions) { transaction in
                         HStack {
-                            Text(expense.date, style: .date)
+                            Text(transaction.date, style: .date)
                             Spacer()
-                            Text("$\(String(format: "%.2f", expense.amount))")
+                            Text("$\(String(format: "%.2f", transaction.amount))")
                         }
                     }
                 }
@@ -77,10 +77,10 @@ struct CategoryDetailView: View {
         .padding()
     }
     
-    func filterExpenses(for component: Calendar.Component) -> Double {
+    func filterTransactions(for component: Calendar.Component) -> Double {
         let calendar = Calendar.current
         let today = Date()
-        return filteredExpenses
+        return filteredTransactions
             .filter {
                 calendar.isDate($0.date, equalTo: today, toGranularity: component)
             }
@@ -99,9 +99,9 @@ struct CategoryDetailView: View {
 }
 
 #Preview {
-    CategoryDetailView(category: "Dining", expenses: [
-        Expense(date: Date().addingTimeInterval(-86400), category: "Dining", amount: 20),
-        Expense(date: Date().addingTimeInterval(-86400 * 7), category: "Dining", amount: 50),
-        Expense(date: Date().addingTimeInterval(-86400 * 30), category: "Dining", amount: 100)
+    CategoryDetailView(category: "Dining", transactions: [
+        TransactionModel(date: Date().addingTimeInterval(-86400), categoryId: 1, category: "Dining", amount: 20, isIncome: false),
+        TransactionModel(date: Date().addingTimeInterval(-86400 * 7), categoryId: 2, category: "Dining", amount: 50, isIncome: false),
+        TransactionModel(date: Date().addingTimeInterval(-86400 * 30), categoryId: 3, category: "Dining", amount: 100, isIncome: false)
     ])
 }

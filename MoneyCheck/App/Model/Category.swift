@@ -9,6 +9,6 @@ import Charts
 import SwiftUI
 
 struct Category: Identifiable {
-    let id = UUID()
+    let id: Int
     let name: String
 }
