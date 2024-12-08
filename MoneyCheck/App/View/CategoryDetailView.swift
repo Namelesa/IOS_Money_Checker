@@ -98,10 +98,10 @@ struct CategoryDetailView: View {
     }
 }
 
-#Preview {
-    CategoryDetailView(category: "Dining", transactions: [
-        TransactionModel(date: Date().addingTimeInterval(-86400), categoryId: 1, category: "Dining", amount: 20, isIncome: false),
-        TransactionModel(date: Date().addingTimeInterval(-86400 * 7), categoryId: 2, category: "Dining", amount: 50, isIncome: false),
-        TransactionModel(date: Date().addingTimeInterval(-86400 * 30), categoryId: 3, category: "Dining", amount: 100, isIncome: false)
-    ])
-}
+//#Preview {
+//    CategoryDetailView(category: "Dining", transactions: [
+//        TransactionModel(date: Date().addingTimeInterval(-86400), categoryId: 1, category: "Dining", amount: 20, isIncome: false),
+//        TransactionModel(date: Date().addingTimeInterval(-86400 * 7), categoryId: 2, category: "Dining", amount: 50, isIncome: false),
+//        TransactionModel(date: Date().addingTimeInterval(-86400 * 30), categoryId: 3, category: "Dining", amount: 100, isIncome: false)
+//    ])
+//}

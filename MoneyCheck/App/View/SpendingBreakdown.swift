@@ -44,10 +44,10 @@ struct SpendingBreakdown: View {
 #Preview {
     SpendingBreakdown(
         transactions: [
-            TransactionModel(date: Date(), categoryId: 1, category: "Food", amount: -50, isIncome: false),
-            TransactionModel(date: Date(), categoryId: 2, category: "Transport", amount: -20, isIncome: false),
-            TransactionModel(date: Date(), categoryId: 1, category: "Food", amount: -30, isIncome: false),
-            TransactionModel(date: Date(), categoryId: 3, category: "Salary", amount: 1500, isIncome: true)
+//            TransactionModel(date: Date(), categoryId: 1, category: "Food", amount: -50, isIncome: false),
+//            TransactionModel(date: Date(), categoryId: 2, category: "Transport", amount: -20, isIncome: false),
+//            TransactionModel(date: Date(), categoryId: 1, category: "Food", amount: -30, isIncome: false),
+//            TransactionModel(date: Date(), categoryId: 3, category: "Salary", amount: 1500, isIncome: true)
         ],
         selectedCategory: .constant(nil),
         showDetails: .constant(false)

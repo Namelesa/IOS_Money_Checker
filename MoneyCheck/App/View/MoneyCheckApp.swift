@@ -12,6 +12,12 @@ struct MoneyCheckApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(transactionManager)
         }
     }
+    
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @StateObject private var transactionManager = TransactionViewModel()
+    
+
 }

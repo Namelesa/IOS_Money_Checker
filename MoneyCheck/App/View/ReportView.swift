@@ -2,18 +2,14 @@ import SwiftUI
 import Charts
 
 struct ReportView: View {
+    @EnvironmentObject private var transactionManager: TransactionViewModel
     @State private var selectedDate = Date()
     @State private var selectedCategory: String? = nil
     @State private var showCategoryDetails = false
     
-    @State private var transactions = [
-        TransactionModel(date: Calendar.current.date(byAdding: .day, value: -1, to: Date())!, categoryId: 1, category: "Test1", amount: 450, isIncome: false),
-        TransactionModel(date: Date(), categoryId: 2, category: "Test2", amount: 300, isIncome: false),
-        TransactionModel(date: Date(), categoryId: 3, category: "Test3", amount: 150, isIncome: false),
-        TransactionModel(date: Date(), categoryId: 4, category: "Test4", amount: 200, isIncome: false),
-        TransactionModel(date: Calendar.current.date(byAdding: .day, value: -2, to: Date())!, categoryId: 5, category: "Salary", amount: 5000, isIncome: true),
-        TransactionModel(date: Date(), categoryId: 6, category: "Bonus", amount: 2000, isIncome: true)
-    ]
+    private var transactions: [TransactionModel] {
+        transactionManager.transactions
+    }
     
     var filteredTransactions: [TransactionModel] {
         transactions.filter { Calendar.current.isDate($0.date, inSameDayAs: selectedDate) }

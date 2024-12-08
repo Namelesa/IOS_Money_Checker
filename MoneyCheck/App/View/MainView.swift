@@ -1,20 +1,14 @@
-//
-//  MainView.swift
-//  MoneyCheck
-//
-//  Created by Максим Билык on 26.09.2024.
-//
-
 import SwiftUI
 
 struct MainView: View {
+    @EnvironmentObject var transactionManager: TransactionViewModel
     @AppStorage("salary") private var salary: Double = 0
     @State private var transactions: [TransactionModel] = []
     @State private var selectedCategory: String? = nil
     @State private var showDetails = false
     @State private var category: String = ""
     @State private var amount: String = ""
-    @State private var categoryId: Int = 0
+    @State private var categoryId = "" // Ensure this is initialized
 
     var body: some View {
         NavigationView {
@@ -72,14 +66,11 @@ struct MainView: View {
     
     private func addTransaction(isIncome: Bool) {
         guard let amountValue = Double(amount), !category.isEmpty else { return }
-        let transaction = TransactionModel(date: Date(), categoryId: categoryId, category: category, amount: isIncome ? amountValue : -amountValue, isIncome: isIncome)
-        transactions.append(transaction)
-        category = ""
-        amount = ""
-        categoryId += 1 // Increment the category ID for next transaction
+        transactionManager.createTransaction(date: Date.now, amount: amountValue, isIncome: isIncome, categoryId: categoryId)
     }
 }
 
 #Preview {
     MainView()
+        .environmentObject(TransactionViewModel())
 }

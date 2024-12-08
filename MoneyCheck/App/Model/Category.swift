@@ -5,10 +5,16 @@
 //  Created by Максим Билык on 29.09.2024.
 //
 
-import Charts
 import SwiftUI
 
 struct Category: Identifiable {
-    let id: Int
+    let id: String
     let name: String
+}
+
+extension Category {
+    init(entity: CategoryEntity) {
+        self.id = entity.id.stringValue
+        self.name = entity.name
+    }
 }

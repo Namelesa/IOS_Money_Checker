@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		43A019072D05BCF5005599BF /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 43A019062D05BCF5005599BF /* RealmSwift */; };
 		9562A14F2D031F8000B931B0 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 9562A14E2D031F8000B931B0 /* Collections */; };
 /* End PBXBuildFile section */
 
@@ -40,6 +41,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				43A019072D05BCF5005599BF /* RealmSwift in Frameworks */,
 				9562A14F2D031F8000B931B0 /* Collections in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -76,6 +78,7 @@
 			name = MoneyCheck;
 			packageProductDependencies = (
 				9562A14E2D031F8000B931B0 /* Collections */,
+				43A019062D05BCF5005599BF /* RealmSwift */,
 			);
 			productName = MoneyCheck;
 			productReference = 9538BBC92CA53E7F00A24210 /* MoneyCheck.app */;
@@ -108,6 +111,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				9562A14D2D031F8000B931B0 /* XCRemoteSwiftPackageReference "swift-collections" */,
+				43A019052D05BCF5005599BF /* XCRemoteSwiftPackageReference "realm-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 95D5BB6D2C9F2A9B008F78CC;
@@ -343,6 +347,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		43A019052D05BCF5005599BF /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/realm/realm-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.54.1;
+			};
+		};
 		9562A14D2D031F8000B931B0 /* XCRemoteSwiftPackageReference "swift-collections" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-collections.git";
@@ -354,6 +366,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		43A019062D05BCF5005599BF /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 43A019052D05BCF5005599BF /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
+		};
 		9562A14E2D031F8000B931B0 /* Collections */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 9562A14D2D031F8000B931B0 /* XCRemoteSwiftPackageReference "swift-collections" */;
