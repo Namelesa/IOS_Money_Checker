@@ -15,11 +15,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
 
     private func configMigration() {
-        // perform migration if necessary
         let config = Realm.Configuration(
             schemaVersion: 2,
             migrationBlock: { migration, oldSchemaVersion in
-                // additional process such as rename, combine fields, and link to other objects
             })
         Realm.Configuration.defaultConfiguration = config
     }

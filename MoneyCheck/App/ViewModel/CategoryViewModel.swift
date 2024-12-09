@@ -1,10 +1,3 @@
-//
-//  CategoryViewModel.swift
-//  MoneyCheck
-//
-//  Created by Dima Zanuda on 08.12.2024.
-//
-
 import Foundation
 import RealmSwift
 
@@ -29,13 +22,11 @@ class CategoryViewModel: ObservableObject {
     
     private func setupObserver() {
         do {
-            self.realm = try Realm()
             let results = realm.objects(CategoryEntity.self)
             
             token = results.observe({ [weak self] changes in
-                // 6
                 self?.categories = results.map(Category.init)
-                    .sorted(by: { $0.name < $1.name})
+                    .sorted(by: { $0.name < $1.name })
             })
         } catch let error {
             print(error.localizedDescription)
@@ -49,12 +40,17 @@ class CategoryViewModel: ObservableObject {
         let categoryEntity = CategoryEntity()
         categoryEntity.name = name
 
-        try! realm.write {
-            realm.add(categoryEntity)
+        do {
+            try realm.write {
+                realm.add(categoryEntity)
+            }
+            fetchCategories()
+            print("Category created: \(name)")
+        } catch let error {
+            print("Failed to create category: \(error.localizedDescription)")
         }
-        fetchCategories()
     }
-
+    
     // Read
     func fetchCategories() {
         let categoryEntities = realm.objects(CategoryEntity.self)
@@ -66,8 +62,7 @@ class CategoryViewModel: ObservableObject {
             let objectId = try ObjectId(string: id)
             if let categoryEntity = realm.object(ofType: CategoryEntity.self, forPrimaryKey: objectId) {
                 return Category(entity: categoryEntity)
-            }
-            else {
+            } else {
                 print("Category not found")
                 return nil
             }

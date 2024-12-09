@@ -15,21 +15,18 @@ struct CategoryDetailView: View {
     var filteredTransactions: [TransactionModel] {
         transactions.filter { $0.category == category }
     }
-    
-    var dailyTotal: Double {
-        filterTransactions(for: .day)
+
+    var transactionsLastMonth: [TransactionModel] {
+        let oneMonthAgo = Calendar.current.date(byAdding: .month, value: -1, to: Date())!
+        return filteredTransactions.filter { $0.date >= oneMonthAgo }
     }
     
-    var weeklyTotal: Double {
-        filterTransactions(for: .weekOfYear)
+    var incomeTransactions: [TransactionModel] {
+        transactionsLastMonth.filter { $0.isIncome }
     }
     
-    var monthlyTotal: Double {
-        filterTransactions(for: .month)
-    }
-    
-    var yearlyTotal: Double {
-        filterTransactions(for: .year)
+    var expenseTransactions: [TransactionModel] {
+        transactionsLastMonth.filter { !$0.isIncome }
     }
     
     var body: some View {
@@ -38,70 +35,58 @@ struct CategoryDetailView: View {
                 .font(.title2)
                 .bold()
                 .padding(.horizontal)
-            
-            // Chart for showing the transactions for the category
+
             Chart {
-                ForEach(filteredTransactions) { transaction in
+                ForEach(incomeTransactions) { transaction in
                     BarMark(
                         x: .value("Date", transaction.date, unit: .day),
                         y: .value("Amount", transaction.amount)
                     )
-                    .foregroundStyle(transaction.isIncome ? .green : .red)
+                    .foregroundStyle(.green)
+                }
+                ForEach(expenseTransactions) { transaction in
+                    BarMark(
+                        x: .value("Date", transaction.date, unit: .day),
+                        y: .value("Amount", transaction.amount)
+                    )
+                    .foregroundStyle(.red)
                 }
             }
             .frame(height: 200)
             .padding(.horizontal)
             
-            // Summary of total amounts
-            List {
-                Section(header: Text("Summary")) {
-                    summaryRow(title: "Daily Total", amount: dailyTotal)
-                    summaryRow(title: "Weekly Total", amount: weeklyTotal)
-                    summaryRow(title: "Monthly Total", amount: monthlyTotal)
-                    summaryRow(title: "Yearly Total", amount: yearlyTotal)
-                }
+
+            VStack(alignment: .leading) {
+                Text("Income Transactions (Last Month)")
+                    .font(.headline)
+                    .padding(.horizontal)
                 
-                Section(header: Text("Transactions")) {
-                    ForEach(filteredTransactions) { transaction in
-                        HStack {
-                            Text(transaction.date, style: .date)
-                            Spacer()
-                            Text("$\(String(format: "%.2f", transaction.amount))")
-                        }
+                List(incomeTransactions) { transaction in
+                    HStack {
+                        Text(transaction.date, style: .date)
+                        Spacer()
+                        Text("\(transaction.amount, specifier: "%.2f") $")
+                            .foregroundColor(.green)
                     }
                 }
             }
-            .listStyle(GroupedListStyle())
+            
+            VStack(alignment: .leading) {
+                Text("Expense Transactions (Last Month)")
+                    .font(.headline)
+                    .padding(.horizontal)
+                
+                List(expenseTransactions) { transaction in
+                    HStack {
+                        Text(transaction.date, style: .date)
+                        Spacer()
+                        Text("\(transaction.amount, specifier: "%.2f") $")
+                            .foregroundColor(.red) 
+                    }
+                }
+            }
         }
         .navigationTitle("\(category) Details")
         .padding()
     }
-    
-    func filterTransactions(for component: Calendar.Component) -> Double {
-        let calendar = Calendar.current
-        let today = Date()
-        return filteredTransactions
-            .filter {
-                calendar.isDate($0.date, equalTo: today, toGranularity: component)
-            }
-            .reduce(0) { $0 + $1.amount }
-    }
-    
-    private func summaryRow(title: String, amount: Double) -> some View {
-        HStack {
-            Text(title)
-            Spacer()
-            Text("$\(String(format: "%.2f", amount))")
-                .bold()
-        }
-        .padding(.vertical, 5)
-    }
 }
-
-//#Preview {
-//    CategoryDetailView(category: "Dining", transactions: [
-//        TransactionModel(date: Date().addingTimeInterval(-86400), categoryId: 1, category: "Dining", amount: 20, isIncome: false),
-//        TransactionModel(date: Date().addingTimeInterval(-86400 * 7), categoryId: 2, category: "Dining", amount: 50, isIncome: false),
-//        TransactionModel(date: Date().addingTimeInterval(-86400 * 30), categoryId: 3, category: "Dining", amount: 100, isIncome: false)
-//    ])
-//}

@@ -7,13 +7,13 @@
 import SwiftUI
 
 struct SpendingBreakdown: View {
-    var transactions: [TransactionModel]
+    @ObservedObject var transactionManager: TransactionViewModel
     @Binding var selectedCategory: String?
     @Binding var showDetails: Bool
+    var n: Int = 5 // Количество транзакций для отображения, по умолчанию 5
     
-    var groupedTransactions: [String: Double] {
-        Dictionary(grouping: transactions, by: { $0.category })
-            .mapValues { $0.reduce(0) { $0 + $1.amount } }
+    var sortedTransactions: [TransactionModel] {
+        transactionManager.transactions.sorted { $0.date > $1.date }
     }
     
     var body: some View {
@@ -21,35 +21,23 @@ struct SpendingBreakdown: View {
             Text("Spending Breakdown")
                 .font(.headline)
                 .padding(.bottom, 10)
-            
-            ForEach(groupedTransactions.keys.sorted(), id: \.self) { category in
+
+            ForEach(sortedTransactions.prefix(n), id: \.id) { transaction in
                 HStack {
-                    Text(category)
+                    Text(transaction.category)
                         .font(.subheadline)
                     Spacer()
-                    Text("$\(String(format: "%.2f", groupedTransactions[category]!))")
-                        .foregroundColor(groupedTransactions[category]! < 0 ? .red : .green)
+
+                    Text("$\(String(format: "%.2f", abs(transaction.amount)))")
+                        .foregroundColor(transaction.isIncome ? .green : .red) 
                 }
                 .padding(.vertical, 5)
                 .onTapGesture {
-                    selectedCategory = category
+                    selectedCategory = transaction.category
                     showDetails = true
                 }
             }
         }
         .padding()
     }
-}
-
-#Preview {
-    SpendingBreakdown(
-        transactions: [
-//            TransactionModel(date: Date(), categoryId: 1, category: "Food", amount: -50, isIncome: false),
-//            TransactionModel(date: Date(), categoryId: 2, category: "Transport", amount: -20, isIncome: false),
-//            TransactionModel(date: Date(), categoryId: 1, category: "Food", amount: -30, isIncome: false),
-//            TransactionModel(date: Date(), categoryId: 3, category: "Salary", amount: 1500, isIncome: true)
-        ],
-        selectedCategory: .constant(nil),
-        showDetails: .constant(false)
-    )
 }

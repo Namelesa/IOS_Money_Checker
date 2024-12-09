@@ -19,9 +19,15 @@ extension TransactionModel {
     init(entity: TransectionEntity) {
         self.id = entity.id.stringValue
         self.date = entity.date
-        self.categoryId = entity.category.id.stringValue
-        self.category = entity.category.name
         self.amount = entity.amount
         self.isIncome = entity.isIncome
+
+        if let category = entity.category {
+            self.categoryId = category.id.stringValue
+            self.category = category.name
+        } else {
+            self.categoryId = ""
+            self.category = "Unknown"
+        }
     }
 }
