@@ -1,3 +1,10 @@
+//
+//  MainView.swift
+//  MoneyCheck
+//
+//  Created by Максим Билык on 26.09.2024.
+//
+
 import SwiftUI
 
 struct MainView: View {
@@ -8,6 +15,7 @@ struct MainView: View {
     @State private var showDetails = false
     @State private var category: String = ""
     @State private var amount: String = ""
+    @Binding var transactionCount: Int
 
     var body: some View {
         NavigationView {
@@ -76,7 +84,7 @@ struct MainView: View {
     }
 
     private var transactionBreakdownSection: some View {
-        SpendingBreakdown(transactionManager: transactionManager, selectedCategory: $selectedCategory, showDetails: $showDetails)
+        SpendingBreakdown(transactionManager: transactionManager, selectedCategory: $selectedCategory, showDetails: $showDetails, transactionCount: $transactionCount)
     }
 
     private func addTransaction(isIncome: Bool) {

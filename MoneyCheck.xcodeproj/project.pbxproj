@@ -8,11 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		43A019072D05BCF5005599BF /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 43A019062D05BCF5005599BF /* RealmSwift */; };
+		9520098C2D0B392400A3AFE9 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9576E9812D0B381C00A9AF7D /* UserNotifications.framework */; };
 		9562A14F2D031F8000B931B0 /* Collections in Frameworks */ = {isa = PBXBuildFile; productRef = 9562A14E2D031F8000B931B0 /* Collections */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		9538BBC92CA53E7F00A24210 /* MoneyCheck.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MoneyCheck.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9576E9812D0B381C00A9AF7D /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
+		9576E9832D0B385000A9AF7D /* UserNotificationsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotificationsUI.framework; path = System/Library/Frameworks/UserNotificationsUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -43,17 +46,28 @@
 			files = (
 				43A019072D05BCF5005599BF /* RealmSwift in Frameworks */,
 				9562A14F2D031F8000B931B0 /* Collections in Frameworks */,
+				9520098C2D0B392400A3AFE9 /* UserNotifications.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9576E9802D0B381C00A9AF7D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9576E9832D0B385000A9AF7D /* UserNotificationsUI.framework */,
+				9576E9812D0B381C00A9AF7D /* UserNotifications.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		95D5BB6D2C9F2A9B008F78CC = {
 			isa = PBXGroup;
 			children = (
 				95D5BB782C9F2A9C008F78CC /* MoneyCheck */,
 				9538BBC92CA53E7F00A24210 /* MoneyCheck.app */,
+				9576E9802D0B381C00A9AF7D /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};

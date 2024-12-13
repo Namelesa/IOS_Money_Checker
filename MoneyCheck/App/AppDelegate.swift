@@ -7,10 +7,22 @@
 
 import UIKit
 import RealmSwift
+import UserNotifications
 
-class AppDelegate: NSObject, UIApplicationDelegate {
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+class AppDelegate: UIResponder, UIApplicationDelegate {
+    
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+
+        NotificationService.shared.requestAuthorization()
+        
         configMigration()
+        
+        NotificationService.shared.sendNotification(
+            title: "Hello World!",
+            body: "This is a test notification.",
+            delay: 5
+        )
+        
         return true
     }
 
@@ -22,4 +34,3 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         Realm.Configuration.defaultConfiguration = config
     }
 }
-

@@ -21,16 +21,12 @@ class CategoryViewModel: ObservableObject {
     }
     
     private func setupObserver() {
-        do {
             let results = realm.objects(CategoryEntity.self)
             
             token = results.observe({ [weak self] changes in
                 self?.categories = results.map(Category.init)
                     .sorted(by: { $0.name < $1.name })
             })
-        } catch let error {
-            print(error.localizedDescription)
-        }
     }
 
     // MARK: - CRUD Operations
