@@ -57,7 +57,7 @@ struct CategoryDetailView: View {
             
 
             VStack(alignment: .leading) {
-                Text("Income Transactions (Last Month)")
+                Text("Income Transactions")
                     .font(.headline)
                     .padding(.horizontal)
                 
@@ -72,7 +72,7 @@ struct CategoryDetailView: View {
             }
             
             VStack(alignment: .leading) {
-                Text("Expense Transactions (Last Month)")
+                Text("Expense Transactions")
                     .font(.headline)
                     .padding(.horizontal)
                 
@@ -81,7 +81,7 @@ struct CategoryDetailView: View {
                         Text(transaction.date, style: .date)
                         Spacer()
                         Text("\(transaction.amount, specifier: "%.2f") $")
-                            .foregroundColor(.red) 
+                            .foregroundColor(.red)
                     }
                 }
             }
