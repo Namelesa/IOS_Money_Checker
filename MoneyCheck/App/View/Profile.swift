@@ -10,6 +10,7 @@ import SwiftUI
 struct Profile: View {
     @State private var isSyncing = false
     @State private var syncResult: String? = nil
+    @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
 
     var body: some View {
         NavigationView {
@@ -35,6 +36,8 @@ struct Profile: View {
                         .background(Color(.systemGray6))
                         .cornerRadius(10)
                     }
+                    
+                    logoutButton
                     
                     if let result = syncResult {
                         Text(result)
@@ -64,6 +67,19 @@ struct Profile: View {
             )
         }
     }
+    private var logoutButton: some View {
+            Button(action: {
+                isLoggedIn = false
+            }) {
+                Text("Log out")
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.red)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+            }
+            .padding()
+        }
 }
 
 #Preview {

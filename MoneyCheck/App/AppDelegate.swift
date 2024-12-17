@@ -16,19 +16,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         NotificationService.shared.requestAuthorization()
         
         configMigration()
-        
-        NotificationService.shared.sendNotification(
-            title: "Hello World!",
-            body: "This is a test notification.",
-            delay: 5
-        )
-        
+                
         return true
     }
 
     private func configMigration() {
         let config = Realm.Configuration(
-            schemaVersion: 2,
+            schemaVersion: 3,
             migrationBlock: { migration, oldSchemaVersion in
             })
         Realm.Configuration.defaultConfiguration = config

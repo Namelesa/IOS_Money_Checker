@@ -11,7 +11,7 @@ import RealmSwift
 class UserEntity: Object {
     @Persisted(primaryKey: true) var id: ObjectId
     @Persisted var name: String
-    @Persisted var transactions = List<TransectionEntity>()
+    @Persisted var email: String
 }
 
 extension UserEntity {
@@ -23,5 +23,6 @@ extension UserEntity {
             self.id = ObjectId.generate()
         }
         self.name = model.name
+        self.email = model.email
     }
 }

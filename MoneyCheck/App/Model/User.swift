@@ -9,12 +9,14 @@ import SwiftUI
 struct User: Identifiable {
     let id: String
     let name: String
+    let email: String
 }
 
-extension Category {
+extension User {
     init(entity: UserEntity) {
         self.id = entity.id.stringValue
         self.name = entity.name
+        self.email = entity.email
     }
 }
 

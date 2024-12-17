@@ -18,24 +18,26 @@ struct MainView: View {
     @Binding var transactionCount: Int
 
     var body: some View {
-        NavigationView {
-            ScrollView {
-                VStack(spacing: 30) {
-                    Text("Your Budget")
-                        .font(.largeTitle)
-                        .bold()
-                    transactionInputSection
-                    transactionBreakdownSection
+            NavigationView {
+                VStack {
+                    ScrollView {
+                        VStack(spacing: 30) {
+                            Text("Your Budget")
+                                .font(.largeTitle)
+                                .bold()
+                            transactionInputSection
+                            transactionBreakdownSection
+                        }
+                        .padding()
+                    }
                 }
-                .padding()
-            }
-            .navigationTitle("MoneyCheck")
-            .onAppear {
-                transactionManager.fetchTransactions()
+                .navigationTitle("MoneyCheck")
+                .onAppear {
+                    transactionManager.fetchTransactions()
+                }
             }
         }
-    }
-
+    
     private var transactionInputSection: some View {
         VStack(spacing: 15) {
             Text("Add Transaction")
