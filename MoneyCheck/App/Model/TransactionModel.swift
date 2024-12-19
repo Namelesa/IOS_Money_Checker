@@ -6,7 +6,7 @@
 //
 import SwiftUI
 
-struct TransactionModel: Identifiable {
+struct TransactionModel: Identifiable, Codable {
     let id: String
     let date: Date
     var categoryId: String
@@ -16,7 +16,7 @@ struct TransactionModel: Identifiable {
 }
 
 extension TransactionModel {
-    init(entity: TransectionEntity) {
+    init(entity: TransactionEntity) {
         self.id = entity.id.stringValue
         self.date = entity.date
         self.amount = entity.amount

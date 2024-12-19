@@ -8,6 +8,7 @@
 import UIKit
 import RealmSwift
 import UserNotifications
+import Firebase
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
@@ -16,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         NotificationService.shared.requestAuthorization()
         
         configMigration()
-                
+        FirebaseApp.configure()
         return true
     }
 

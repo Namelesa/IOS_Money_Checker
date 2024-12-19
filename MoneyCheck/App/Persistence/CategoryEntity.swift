@@ -8,10 +8,10 @@
 import Foundation
 import RealmSwift
 
-class CategoryEntity: Object {
+class CategoryEntity: Object, Codable {
     @Persisted(primaryKey: true) var id: ObjectId
     @Persisted var name: String
-    @Persisted var transactions = List<TransectionEntity>()
+    @Persisted var transactions = List<TransactionEntity>()
 }
 
 extension CategoryEntity {

@@ -9,14 +9,16 @@ import SwiftUI
 @main
 struct MoneyCheckApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-    @StateObject private var transactionManager = TransactionViewModel()
-    @StateObject private var categoryManager = CategoryViewModel()
 
+    private let container = DependencyContainer.shared
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environmentObject(transactionManager)
-                .environmentObject(categoryManager) 
+                .environmentObject(container.transactionManager)
+                .environmentObject(container.categoryManager)
+                .environmentObject(container.userManager)
+                .environmentObject(container.authManager)
         }
     }
 }

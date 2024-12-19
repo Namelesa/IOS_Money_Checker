@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct Profile: View {
+    @EnvironmentObject private var transactionVM: TransactionViewModel
     @State private var isSyncing = false
     @State private var syncResult: String? = nil
     @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
@@ -54,7 +55,7 @@ struct Profile: View {
     }
     
     private func syncData() {
-        isSyncing = true
+        transactionVM.syncTransactions(userId: "1234")
         syncResult = nil
 
         DispatchQueue.main.asyncAfter(deadline: .now()) {
