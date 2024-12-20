@@ -6,10 +6,11 @@
 //
 import SwiftUI
 
-struct User: Identifiable {
+struct User: Identifiable, Codable {
     let id: String
     let name: String
     let email: String
+    let lastSyncDate: Date
 }
 
 extension User {
@@ -17,6 +18,7 @@ extension User {
         self.id = entity.id.stringValue
         self.name = entity.name
         self.email = entity.email
+        self.lastSyncDate = entity.lastSyncDate
     }
 }
 

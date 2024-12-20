@@ -1,9 +1,14 @@
 import Foundation
 import RealmSwift
+import Combine
 
 class TransactionViewModel: ObservableObject {
-    private var realm: Realm!
+    
+        private var realm: Realm!
+        private var cancellables = Set<AnyCancellable>()
+        private let transactionManager = TransactionManager()
         @Published var transactions: [TransactionModel] = []
+        @Published var errorMessage: String?
         private var token: NotificationToken?
         
         init() {
@@ -21,29 +26,24 @@ class TransactionViewModel: ObservableObject {
         }
     
     private func setupObserver() {
-            do {
-                self.realm = try Realm()
-                let results = realm.objects(TransectionEntity.self)
+                let results = realm.objects(TransactionEntity.self)
                 
                 token = results.observe({ [weak self] changes in
                     self?.transactions = results.map(TransactionModel.init)
                         .sorted(by: { $0.date > $1.date })
                 })
-            } catch let error {
-                print(error.localizedDescription)
-            }
         }
         
 
         func fetchTransactions() {
-            let transactionEntities = realm.objects(TransectionEntity.self)
+            let transactionEntities = realm.objects(TransactionEntity.self)
             self.transactions = transactionEntities.map { TransactionModel(entity: $0) }
         }
         
     func getTransactionById(id: String) -> TransactionModel? {
         do {
             let objectId = try ObjectId(string: id)
-            if let transactionEntity = realm.object(ofType: TransectionEntity.self, forPrimaryKey: objectId) {
+            if let transactionEntity = realm.object(ofType: TransactionEntity.self, forPrimaryKey: objectId) {
                 return TransactionModel(entity: transactionEntity)
             } else {
                 print("Transaction not found")
@@ -64,7 +64,7 @@ class TransactionViewModel: ObservableObject {
                 return
             }
             
-            let transactionEntity = TransectionEntity()
+            let transactionEntity = TransactionEntity()
             transactionEntity.date = date
             transactionEntity.amount = amount
             transactionEntity.isIncome = isIncome
@@ -86,7 +86,7 @@ class TransactionViewModel: ObservableObject {
     func updateTransaction(id: String, newDate: Date, newAmount: Double, isIncome: Bool) {
         do {
             let objectId = try ObjectId(string: id)
-            if let transactionEntity = realm.object(ofType: TransectionEntity.self, forPrimaryKey: objectId) {
+            if let transactionEntity = realm.object(ofType: TransactionEntity.self, forPrimaryKey: objectId) {
                 try realm.write {
                     transactionEntity.date = newDate
                     transactionEntity.amount = newAmount
@@ -102,7 +102,7 @@ class TransactionViewModel: ObservableObject {
     func deleteTransaction(id: String) {
         do {
             let objectId = try ObjectId(string: id)
-            if let transactionEntity = realm.object(ofType: TransectionEntity.self, forPrimaryKey: objectId) {
+            if let transactionEntity = realm.object(ofType: TransactionEntity.self, forPrimaryKey: objectId) {
                 try realm.write {
                     realm.delete(transactionEntity)
                 }
@@ -111,4 +111,48 @@ class TransactionViewModel: ObservableObject {
             print("Failed to delete transaction: \(error.localizedDescription)")
         }
     }
+    
+    //MARK: - Sync
+    
+    func syncTransactions(userId: String) {
+           // 1. Получаем не синхронизированные транзакции из Realm
+           let unsyncedTransactions = self.fetchUnsyncedTransactions()
+           let transactionRequests = unsyncedTransactions.map { TransactionRequest(entity: $0) }
+           
+           // 2. Отправляем их в Firestore
+           transactionManager.uploadTransactions(userId: userId, transactions: transactionRequests)
+               .flatMap { _ in
+                   // 3. Получаем обновлённые транзакции из Firestore за последний год
+                   self.transactionManager.fetchTransactions(userId: userId, since: Calendar.current.date(byAdding: .year, value: -1, to: Date())!)
+               }
+               .sink(receiveCompletion: { completion in
+                   if case let .failure(error) = completion {
+                       self.errorMessage = "Error during sync: \(error.localizedDescription)"
+                   }
+               }, receiveValue: { updatedTransactions in
+                   // 4. Обновляем Realm с полученными данными
+                   self.updateTransactions(with: updatedTransactions)
+               })
+               .store(in: &cancellables)
+       }
+        
+    
+    
+    private func fetchUnsyncedTransactions() -> [TransactionEntity] {
+        return Array(realm.objects(TransactionEntity.self).filter("isSync == false"))
+    }
+    
+    private func updateTransactions(with transactions: [TransactionRequest]) {
+            try? realm.write {
+                transactions.forEach { request in
+                    let transactionEntity = TransactionEntity()
+                    transactionEntity.id = try! ObjectId(string: request.id)
+                    transactionEntity.date = request.date
+                    transactionEntity.amount = Double(truncating: request.amount as NSNumber)
+                    transactionEntity.isIncome = request.isIncome
+                    transactionEntity.isSync = true
+                    realm.add(transactionEntity, update: .modified)
+                }
+            }
+        }
 }

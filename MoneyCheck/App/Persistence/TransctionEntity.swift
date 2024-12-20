@@ -8,15 +8,16 @@
 import Foundation
 import RealmSwift
 
-class TransectionEntity: Object {
+class TransactionEntity: Object, Codable{
     @Persisted(primaryKey: true) var id: ObjectId
     @Persisted var date: Date = Date()
     @Persisted var category: CategoryEntity!
     @Persisted var amount: Double
     @Persisted var isIncome: Bool
+    @Persisted var isSync: Bool = false
 }
 
-extension TransectionEntity {
+extension TransactionEntity {
     convenience init(model: TransactionModel, categoryEntity: CategoryEntity) {
         self.init()
         guard let objectId = try? ObjectId(string: model.id) else {
