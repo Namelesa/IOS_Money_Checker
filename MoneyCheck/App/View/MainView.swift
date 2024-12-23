@@ -10,6 +10,7 @@ import SwiftUI
 struct MainView: View {
     @EnvironmentObject var transactionManager: TransactionViewModel
     @EnvironmentObject var categoryManager: CategoryViewModel
+    @EnvironmentObject var authViewModel: AuthenticationViewModel
     @State private var transactions: [TransactionModel] = []
     @State private var selectedCategory: String? = nil
     @State private var showDetails = false
@@ -18,23 +19,30 @@ struct MainView: View {
     @Binding var transactionCount: Int
 
     var body: some View {
-            NavigationView {
-                VStack {
-                    ScrollView {
-                        VStack(spacing: 30) {
-                            Text("Your Budget")
-                                .font(.largeTitle)
-                                .bold()
-                            transactionInputSection
-                            transactionBreakdownSection
-                        }
-                        .padding()
+        NavigationView {
+            VStack {
+                ScrollView {
+                    VStack(spacing: 30) {
+                        Text("Your Budget")
+                            .font(.largeTitle)
+                            .bold()
+                        transactionInputSection
+                        transactionBreakdownSection
                     }
+                    .padding()
                 }
-                .navigationTitle("MoneyCheck")
-                .onAppear {
-                    transactionManager.fetchTransactions()
-                }
+            }
+            .navigationTitle("MoneyCheck")
+            .onAppear {
+                transactionManager.userId = authViewModel.userId
+                transactionManager.fetchTransactions()
+                categoryManager.userId = authViewModel.userId
+                categoryManager.fetchCategories()
+            }
+            .onChange(of: transactionManager.transactions.count) {
+                transactionManager.fetchTransactions()
+                categoryManager.fetchCategories()
+            }
             }
         }
     
@@ -106,8 +114,13 @@ struct MainView: View {
             print("Category not found")
             return
         }
-
-        transactionManager.createTransaction(date: Date.now, amount: amountValue, isIncome: isIncome, categoryId: validCategory.id)
+        
+        guard !authViewModel.userId.isEmpty else {
+            print("User not found")
+            return
+        }
+            
+        transactionManager.createTransaction(date: Date.now, amount: amountValue, isIncome: isIncome, categoryId: validCategory.id, userId: authViewModel.userId)
 
         amount = ""
         category = ""

@@ -10,13 +10,14 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var transactionManager: TransactionViewModel
+    @EnvironmentObject var authViewModel: AuthenticationViewModel
     @State private var selectedTab = "Home"
     @State private var transactionCount = 5
     @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            if isLoggedIn {
+            if authViewModel.state == .signedIn {
                 MainView(transactionCount: $transactionCount)
                     .tag("Home")
                     .tabItem {
@@ -40,14 +41,18 @@ struct ContentView: View {
                     .tabItem {
                         Label("Profile", systemImage: "person")
                     }
-                   } else {
-                       AuthView(isLoggedIn: $isLoggedIn)
-                   }
+            } else {
+                AuthView()
+            }
+        }
+        .onChange(of: authViewModel.state) { newState, _ in
+            if newState == .signedIn {
+                isLoggedIn = true
+            }
         }
     }
 }
 
 #Preview {
     ContentView()
-        .environmentObject(TransactionViewModel())
 }

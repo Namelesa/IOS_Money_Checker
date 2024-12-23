@@ -15,7 +15,7 @@ struct User: Identifiable, Codable {
 
 extension User {
     init(entity: UserEntity) {
-        self.id = entity.id.stringValue
+        self.id = entity.id
         self.name = entity.name
         self.email = entity.email
         self.lastSyncDate = entity.lastSyncDate

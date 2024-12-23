@@ -9,19 +9,18 @@ import Foundation
 import RealmSwift
 
 class CategoryEntity: Object, Codable {
-    @Persisted(primaryKey: true) var id: ObjectId
+    @Persisted(primaryKey: true) var id: String
     @Persisted var name: String
     @Persisted var transactions = List<TransactionEntity>()
+    @Persisted var user: UserEntity!
+    
 }
 
 extension CategoryEntity {
-    convenience init(model: Category) {
+    convenience init(id: String, name: String, userEntity: UserEntity) {
         self.init()
-        if let objectId = try? ObjectId(string: model.id) {
-            self.id = objectId
-        } else {
-            self.id = ObjectId.generate()
-        }
-        self.name = model.name
+        self.id = id
+        self.name = name
+        self.user = userEntity
     }
 }

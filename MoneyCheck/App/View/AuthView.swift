@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AuthView: View {
     @EnvironmentObject var auth: AuthenticationViewModel
-    @Binding var isLoggedIn: Bool
+    @State var isLoggedIn: Bool = false
     @State private var email: String = ""
     @State private var name: String = ""
     @State private var password: String = ""
@@ -37,13 +37,18 @@ struct AuthView: View {
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .keyboardType(.emailAddress)
                     .autocapitalization(.none)
+                    .submitLabel(.next)
+                    .focused($emailIsFocused)
                 
                 TextField("FullName", text: $name)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .autocapitalization(.none)
+                    .submitLabel(.next)
                 
                 SecureField("Password", text: $password)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .focused($passwordIsFocused)
+                    .submitLabel(.next)
             }
             .padding(.horizontal)
             
@@ -54,7 +59,7 @@ struct AuthView: View {
                 showAuthLoader: $showAuthLoader,
                 showInvalidPWAlert: $showInvalidPWAlert,
                 isAuthenticated: $isLoggedIn,
-                buttonText: "Sign in")
+                buttonText: "Sign In")
             .frame(maxWidth: .infinity)
             .padding()
             .background(Color.blue)
@@ -100,5 +105,7 @@ struct AuthView: View {
                                 
         }
         .padding(.horizontal)
+        .navigationBarHidden(true)
+        .navigationBarBackButtonHidden(true)
     }
 }

@@ -35,7 +35,7 @@ struct LoginButton : View {
                 }
                 showAuthLoader = false
             }
-        }){
+        }) {
             Text(buttonText)
                 .disabled(emailAddress.isEmpty || password.isEmpty)
                 .alert(isPresented: $showInvalidPWAlert) {

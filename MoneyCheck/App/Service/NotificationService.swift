@@ -25,7 +25,7 @@ class NotificationService: NSObject, UNUserNotificationCenterDelegate {
         }
     }
     
-    func sendNotification(title: String, body: String, delay: TimeInterval = 5) {
+    func sendNotification(title: String, body: String, delay: TimeInterval = 1) {
         let notificationsEnabled = UserDefaults.standard.bool(forKey: "enableNotifications")
         guard notificationsEnabled else {
             print("Notifications are disabled")

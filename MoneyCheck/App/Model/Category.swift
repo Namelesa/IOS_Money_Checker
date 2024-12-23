@@ -14,7 +14,7 @@ struct Category: Identifiable {
 
 extension Category {
     init(entity: CategoryEntity) {
-        self.id = entity.id.stringValue
+        self.id = entity.id
         self.name = entity.name
     }
 }

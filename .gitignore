@@ -2,6 +2,7 @@ MoneyCheck/Configuration/MoneyCheckerFirebaseAuthInfo.plist
 .DS_Store
 **/.DS_Store
 MoneyCheck/Configuration/Info.plist
+MoneyCheck/Configuration/GoogleService-Info.plist
 # Created by https://www.toptal.com/developers/gitignore/api/macos,swift,xcode
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,swift,xcode
 

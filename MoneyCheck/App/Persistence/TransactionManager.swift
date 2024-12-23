@@ -115,16 +115,26 @@ struct TransactionRequest: Codable {
     let amount: Decimal
     let date: Date
     let isIncome: Bool
-    let categoryId: String
-    let categoryName: String
+    let category: CategoryFirestore
     
     init(entity: TransactionEntity) {
-        self.id = entity.id.stringValue
+        self.id = entity.id
         self.amount = Decimal(entity.amount)
         self.date = entity.date
         self.isIncome = entity.isIncome
-        self.categoryId = entity.category.id.stringValue
-        self.categoryName = entity.category.name
+        self.category = CategoryFirestore(id: entity.category.id, name: entity.category.name)
     }
         
+}
+
+struct TransactionFirestore: Codable {
+    let id: String
+    let amount: Decimal
+    let date: Timestamp
+    let isIncome: Bool
+}
+
+struct CategoryFirestore: Codable {
+    let id: String
+    let name: String
 }

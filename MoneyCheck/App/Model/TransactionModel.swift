@@ -17,13 +17,13 @@ struct TransactionModel: Identifiable, Codable {
 
 extension TransactionModel {
     init(entity: TransactionEntity) {
-        self.id = entity.id.stringValue
+        self.id = entity.id
         self.date = entity.date
         self.amount = entity.amount
         self.isIncome = entity.isIncome
 
         if let category = entity.category {
-            self.categoryId = category.id.stringValue
+            self.categoryId = category.id
             self.category = category.name
         } else {
             self.categoryId = ""

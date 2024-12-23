@@ -9,6 +9,7 @@ import SwiftUI
 
 struct Profile: View {
     @EnvironmentObject private var transactionVM: TransactionViewModel
+    @EnvironmentObject private var authVM: AuthenticationViewModel
     @State private var isSyncing = false
     @State private var syncResult: String? = nil
     @AppStorage("isLoggedIn") private var isLoggedIn: Bool = false
@@ -55,13 +56,15 @@ struct Profile: View {
     }
     
     private func syncData() {
-        transactionVM.syncTransactions(userId: "1234")
+        guard !authVM.userId.isEmpty else { return }
+        
+        transactionVM.syncTransactions(userId: authVM.userId)
         syncResult = nil
 
         DispatchQueue.main.asyncAfter(deadline: .now()) {
             isSyncing = false
             syncResult = "Sync Success: Data is up-to-date."
-            
+                    
             NotificationService.shared.sendNotification(
                 title: "Sync Completed",
                 body: "Your data is now up-to-date."
@@ -70,6 +73,7 @@ struct Profile: View {
     }
     private var logoutButton: some View {
             Button(action: {
+                authVM.signOut()
                 isLoggedIn = false
             }) {
                 Text("Log out")

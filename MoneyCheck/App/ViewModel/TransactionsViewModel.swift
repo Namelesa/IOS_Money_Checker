@@ -9,6 +9,7 @@ class TransactionViewModel: ObservableObject {
         private let transactionManager = TransactionManager()
         @Published var transactions: [TransactionModel] = []
         @Published var errorMessage: String?
+        @Published var userId: String = ""
         private var token: NotificationToken?
         
         init() {
@@ -26,24 +27,54 @@ class TransactionViewModel: ObservableObject {
         }
     
     private func setupObserver() {
-                let results = realm.objects(TransactionEntity.self)
-                
-                token = results.observe({ [weak self] changes in
-                    self?.transactions = results.map(TransactionModel.init)
-                        .sorted(by: { $0.date > $1.date })
-                })
+        guard !userId.isEmpty else {
+            print("User ID is empty. Observer not set up.")
+            return
+        }
+
+        guard let userObjectId = try? ObjectId(string: userId),
+              let userEntity = realm.object(ofType: UserEntity.self, forPrimaryKey: userObjectId) else {
+            print("User not found with ID: \(userId)")
+            return
+        }
+
+        let results = realm.objects(TransactionEntity.self).filter("user == %@", userEntity)
+
+        token = results.observe({ [weak self] changes in
+            guard let self = self else { return }
+            switch changes {
+            case .initial:
+                self.transactions = results.map(TransactionModel.init).sorted(by: { $0.date > $1.date })
+            case .update(_, let deletions, let insertions, let modifications):
+                print("Deletions: \(deletions), Insertions: \(insertions), Modifications: \(modifications)")
+                self.transactions = results.map(TransactionModel.init).sorted(by: { $0.date > $1.date })
+            case .error(let error):
+                print("Error observing transactions: \(error)")
+            }
+        })
+    }
+
+
+    func fetchTransactions() {
+        
+        guard !userId.isEmpty else {
+            print("User ID is empty")
+            return
+        }
+
+        guard let userEntity = realm.object(ofType: UserEntity.self, forPrimaryKey: userId) else {
+            print("User not found with ID: \(userId)")
+            return
         }
         
+        let transactionEntities = realm.objects(TransactionEntity.self).filter("user == %@", userEntity)
 
-        func fetchTransactions() {
-            let transactionEntities = realm.objects(TransactionEntity.self)
-            self.transactions = transactionEntities.map { TransactionModel(entity: $0) }
-        }
+        self.transactions = transactionEntities.map { TransactionModel(entity: $0) }.sorted(by: { $0.date < $1.date })
+    }
         
     func getTransactionById(id: String) -> TransactionModel? {
         do {
-            let objectId = try ObjectId(string: id)
-            if let transactionEntity = realm.object(ofType: TransactionEntity.self, forPrimaryKey: objectId) {
+            if let transactionEntity = realm.object(ofType: TransactionEntity.self, forPrimaryKey: id) {
                 return TransactionModel(entity: transactionEntity)
             } else {
                 print("Transaction not found")
@@ -56,23 +87,30 @@ class TransactionViewModel: ObservableObject {
     }
     
     // Create
-    func createTransaction(date: Date, amount: Double, isIncome: Bool, categoryId: String) {
+    func createTransaction(date: Date, amount: Double, isIncome: Bool, categoryId: String, userId: String) {
         do {
-            let objectId = try ObjectId(string: categoryId)
-            guard let categoryEntity = realm.object(ofType: CategoryEntity.self, forPrimaryKey: objectId) else {
+            guard let categoryEntity = realm.object(ofType: CategoryEntity.self, forPrimaryKey: categoryId) else {
                 print("Category not found for ID: \(categoryId)")
                 return
             }
+            guard let userEnitity = realm.object(ofType: UserEntity.self, forPrimaryKey: userId) else {
+                print("Category not found for ID: \(userId)")
+                return
+            }
+            
             
             let transactionEntity = TransactionEntity()
+            transactionEntity.id = UUID().uuidString
             transactionEntity.date = date
             transactionEntity.amount = amount
             transactionEntity.isIncome = isIncome
             transactionEntity.category = categoryEntity
+            transactionEntity.user = userEnitity
 
             try realm.write {
                 realm.add(transactionEntity)
                 categoryEntity.transactions.append(transactionEntity)
+                userEnitity.transactions.append(transactionEntity)
             }
 
             print("Transaction created successfully: \(transactionEntity)")
@@ -80,29 +118,11 @@ class TransactionViewModel: ObservableObject {
             print("Failed to create transaction: \(error.localizedDescription)")
         }
     }
-
-   
-    // Update
-    func updateTransaction(id: String, newDate: Date, newAmount: Double, isIncome: Bool) {
-        do {
-            let objectId = try ObjectId(string: id)
-            if let transactionEntity = realm.object(ofType: TransactionEntity.self, forPrimaryKey: objectId) {
-                try realm.write {
-                    transactionEntity.date = newDate
-                    transactionEntity.amount = newAmount
-                    transactionEntity.isIncome = isIncome
-                }
-            }
-        } catch let error {
-            print("Failed to update transaction: \(error.localizedDescription)")
-        }
-    }
     
     // Delete
     func deleteTransaction(id: String) {
         do {
-            let objectId = try ObjectId(string: id)
-            if let transactionEntity = realm.object(ofType: TransactionEntity.self, forPrimaryKey: objectId) {
+            if let transactionEntity = realm.object(ofType: TransactionEntity.self, forPrimaryKey: id) {
                 try realm.write {
                     realm.delete(transactionEntity)
                 }
@@ -146,7 +166,7 @@ class TransactionViewModel: ObservableObject {
             try? realm.write {
                 transactions.forEach { request in
                     let transactionEntity = TransactionEntity()
-                    transactionEntity.id = try! ObjectId(string: request.id)
+                    transactionEntity.id = request.id
                     transactionEntity.date = request.date
                     transactionEntity.amount = Double(truncating: request.amount as NSNumber)
                     transactionEntity.isIncome = request.isIncome
@@ -156,3 +176,7 @@ class TransactionViewModel: ObservableObject {
             }
         }
 }
+
+
+    
+    
